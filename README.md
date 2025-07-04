@@ -1,5 +1,6 @@
 SOX Risk Engine - AI-Powered Compliance Automation
-https://via.placeholder.com/800x400.png?text=SOX+Risk+Engine+Demo
+
+
 Automate SOX compliance assessments with AI-driven risk analysis and control testing
 
 The SOX Risk Engine is an AI-powered solution that transforms weeks of manual SOX compliance work into automated 90-second assessments. Built by auditors for auditors, this engine uses OpenAI's GPT models to analyze control failures, generate risk statements, and create audit-ready documentation with industry-specific logic.
