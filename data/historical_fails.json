@@ -1,0 +1,236 @@
+[
+  {
+    "id": "RISK-1",
+    "description": "IT governance not aligned with institutional priorities leading to poor SOX control oversight",
+    "severity": 4,
+    "category": "Governance"
+  },
+  {
+    "id": "RISK-2",
+    "description": "Lack of designated leadership for IT operations causing inconsistent SOX control implementation",
+    "severity": 4,
+    "category": "Governance"
+  },
+  {
+    "id": "RISK-3",
+    "description": "No information security leadership resulting in inadequate protection of financial data",
+    "severity": 5,
+    "category": "Security"
+  },
+  {
+    "id": "RISK-4",
+    "description": "Absence of succession planning for key IT leaders creating SOX control gaps",
+    "severity": 3,
+    "category": "Governance"
+  },
+  {
+    "id": "RISK-5",
+    "description": "Exclusion of stakeholders from IT investment decisions impacting financial system controls",
+    "severity": 3,
+    "category": "Governance"
+  },
+  {
+    "id": "RISK-6",
+    "description": "Unprioritized IT assets leading to uncontrolled SOX-relevant systems",
+    "severity": 4,
+    "category": "Asset Management"
+  },
+  {
+    "id": "RISK-7",
+    "description": "Outdated IT systems unable to support proper financial reporting controls",
+    "severity": 4,
+    "category": "System Maintenance"
+  },
+  {
+    "id": "RISK-8",
+    "description": "Failure to communicate IT management aims causing inconsistent control execution",
+    "severity": 3,
+    "category": "Governance"
+  },
+  {
+    "id": "RISK-9",
+    "description": "Lack of shared IT-business understanding resulting in control design flaws",
+    "severity": 3,
+    "category": "Governance"
+  },
+  {
+    "id": "RISK-10",
+    "description": "Poor IT project management leading to uncontrolled financial system changes",
+    "severity": 5,
+    "category": "Change Management"
+  },
+  {
+    "id": "RISK-11",
+    "description": "No IT cost allocation process obscuring financial control investments",
+    "severity": 2,
+    "category": "Financial Management"
+  },
+  {
+    "id": "RISK-12",
+    "description": "Missing IT performance measurements preventing control effectiveness monitoring",
+    "severity": 3,
+    "category": "Monitoring"
+  },
+  {
+    "id": "RISK-13",
+    "description": "No IT problem management process allowing control failures to recur",
+    "severity": 4,
+    "category": "Incident Management"
+  },
+  {
+    "id": "RISK-14",
+    "description": "Incorrect public-facing information including financial disclosures",
+    "severity": 4,
+    "category": "Data Integrity"
+  },
+  {
+    "id": "RISK-15",
+    "description": "Critical financial data unavailability during reporting periods",
+    "severity": 5,
+    "category": "Business Continuity"
+  },
+  {
+    "id": "RISK-16",
+    "description": "Prolonged loss of access to financial systems hosted externally",
+    "severity": 5,
+    "category": "Vendor Management"
+  },
+  {
+    "id": "RISK-17",
+    "description": "Unprotected IT communications exposing financial data transmissions",
+    "severity": 5,
+    "category": "Security"
+  },
+  {
+    "id": "RISK-18",
+    "description": "Inaccessible data centers preventing financial system operations",
+    "severity": 4,
+    "category": "Physical Security"
+  },
+  {
+    "id": "RISK-19",
+    "description": "No business continuity plans for extended financial system outages",
+    "severity": 5,
+    "category": "Business Continuity"
+  },
+  {
+    "id": "RISK-20",
+    "description": "Unvetted third-party services processing financial data",
+    "severity": 5,
+    "category": "Vendor Management"
+  },
+  {
+    "id": "RISK-21",
+    "description": "Inadequate policies for protecting financial data confidentiality",
+    "severity": 5,
+    "category": "Security"
+  },
+  {
+    "id": "RISK-22",
+    "description": "Data breaches exposing sensitive financial information",
+    "severity": 5,
+    "category": "Security"
+  },
+  {
+    "id": "RISK-23",
+    "description": "Poor cybersecurity incident response compromising financial systems",
+    "severity": 5,
+    "category": "Incident Management"
+  },
+  {
+    "id": "RISK-24",
+    "description": "Excessive logical access to financial systems violating least privilege",
+    "severity": 5,
+    "category": "Access Controls"
+  },
+  {
+    "id": "RISK-25",
+    "description": "Uncontrolled physical access to financial system hardware",
+    "severity": 4,
+    "category": "Physical Security"
+  },
+  {
+    "id": "RISK-26",
+    "description": "No lifecycle management for financial IT assets",
+    "severity": 3,
+    "category": "Asset Management"
+  },
+  {
+    "id": "RISK-27",
+    "description": "Undocumented IT infrastructure changes affecting financial systems",
+    "severity": 4,
+    "category": "Change Management"
+  },
+  {
+    "id": "RISK-28",
+    "description": "Unmapped financial data flows between systems",
+    "severity": 4,
+    "category": "Data Integrity"
+  },
+  {
+    "id": "RISK-29",
+    "description": "Unmaintained licenses for financial software",
+    "severity": 3,
+    "category": "Compliance"
+  },
+  {
+    "id": "RISK-30",
+    "description": "No process ensuring financial data accuracy during processing",
+    "severity": 5,
+    "category": "Data Integrity"
+  },
+  {
+    "id": "RISK-31",
+    "description": "Missing audit logs for financial system activities",
+    "severity": 5,
+    "category": "Monitoring"
+  },
+  {
+    "id": "RISK-32",
+    "description": "Insufficient IT staff to maintain financial system controls",
+    "severity": 4,
+    "category": "Operations"
+  },
+  {
+    "id": "RISK-33",
+    "description": "Users violating policies when handling financial data",
+    "severity": 4,
+    "category": "Security"
+  },
+  {
+    "id": "RISK-34",
+    "description": "Non-compliance with regulations governing financial data",
+    "severity": 5,
+    "category": "Compliance"
+  },
+  {
+  "id": "RISK-35",
+  "description": "Unauthorized production code deployments bypassing testing requirements",
+  "severity": 5,
+  "category": "Change Management"
+},
+{
+  "id": "RISK-36",
+  "description": "Developers pushing untested code to production environments",
+  "severity": 5,
+  "category": "Segregation of Duties"
+},
+{
+  "id": "RISK-37",
+  "description": "Lack of pre-production testing for financial system code changes",
+  "severity": 5,
+  "category": "Application Controls"
+},
+{
+  "id": "RISK-38",
+  "description": "Git push directly to production branch without pull request",
+  "severity": 5,
+  "category": "Change Management"
+},
+{
+  "id": "RISK-39",
+  "description": "CI/CD pipelines configured to skip testing stages",
+  "severity": 5,
+  "category": "Application Controls"
+}
+]

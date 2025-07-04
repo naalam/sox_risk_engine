@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOX ITGC Auditor Workbench</title>
+  <style>
+    :root {
+      --primary: #005b96;
+      --secondary: #03396c;
+      --accent: #6497b1;
+      --light: #f1f1f1;
+      --dark: #212529;
+      --danger: #d9534f;
+      --warning: #f0ad4e;
+      --success: #5cb85c;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', 'Roboto', sans-serif;
+      line-height: 1.6;
+      color: var(--dark);
+      background-color: #f8f9fa;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .container {
+      max-width: min(1000px, 90vw);
+      margin: 0 auto;
+      padding: 20px;
+      flex: 1;
+      width: 100%;
+    }
+    
+    .header {
+      background: var(--primary);
+      color: white;
+      padding: 20px;
+      border-radius: 5px 5px 0 0;
+      text-align: center;
+    }
+    
+    .action-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin: 30px 0;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 25px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      text-align: center;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+    
+    .card-icon {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+    }
+    
+    .card h3 {
+      color: var(--primary);
+      margin: 10px 0;
+    }
+    
+    .card p {
+      color: var(--dark);
+      opacity: 0.8;
+      font-size: 0.9rem;
+    }
+    
+    .risk-focus-banner {
+      background: #e3f2fd;
+      padding: 10px;
+      border-left: 4px solid var(--primary);
+      margin: 10px 0;
+      display: none;
+    }
+    
+    .chat-container {
+      background: white;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+      margin-bottom: 20px;
+      display: none;
+    }
+    
+    .chat-messages {
+      height: 400px;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    
+    .message {
+      margin-bottom: 15px;
+      max-width: 80%;
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .user-message {
+      background: var(--accent);
+      color: white;
+      padding: 10px 15px;
+      border-radius: 18px 18px 0 18px;
+      margin-left: auto;
+    }
+    
+    .auditor-message {
+      background: var(--light);
+      padding: 10px 15px;
+      border-radius: 18px 18px 18px 0;
+      border: 1px solid #ddd;
+    }
+    
+    .question-group {
+      margin-bottom: 25px;
+    }
+    
+    .question-group h3 {
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+    
+    .auditor-question {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      border-left: 4px solid var(--primary);
+    }
+    
+    .auditor-question label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    
+    .auditor-question label.required-field::after {
+      content: " *";
+      color: var(--danger);
+    }
+    
+    .auditor-question textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      min-height: 80px;
+      font-family: inherit;
+    }
+    
+    #user-input-container {
+      display: none;
+      margin-top: 20px;
+    }
+    
+    #initial-input {
+      width: 100%;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 80px;
+    }
+    
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    
+    button:hover {
+      background: var(--secondary);
+    }
+    
+    button:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+    }
+    
+    .back-btn {
+      background: var(--light);
+      color: var(--dark);
+    }
+    
+    .spinner {
+      display: none;
+      margin: 20px auto;
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(0, 91, 150, 0.1);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .risk-result {
+      background: white;
+      border-left: 4px solid var(--primary);
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-top: 20px;
+      display: none;
+    }
+    
+    .risk-score {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .risk-score-value {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      color: white;
+      font-weight: bold;
+    }
+    
+    .risk-score-1 { background-color: var(--success); }
+    .risk-score-2 { background-color: var(--success); }
+    .risk-score-3 { background-color: var(--warning); }
+    .risk-score-4 { background-color: var(--danger); }
+    .risk-score-5 { background-color: var(--danger); }
+    
+    .risk-level {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    
+    .risk-level-low {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    
+    .risk-level-medium {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+    
+    .risk-level-high {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    
+    .risk-section {
+      margin-bottom: 20px;
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+    }
+    
+    .risk-section h3 {
+      color: var(--primary);
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+    }
+    
+    .risk-details {
+      margin-bottom: 15px;
+    }
+    
+    .risk-details p {
+      margin-bottom: 10px;
+    }
+    
+    .recommendations {
+      background: #e8f4fd;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+    
+    .recommendations ul {
+      padding-left: 20px;
+    }
+    
+    .recommendations li {
+      margin-bottom: 8px;
+    }
+    
+    .attribute-list {
+      list-style-type: none;
+      padding: 0;
+    }
+    
+    .attribute-list li {
+      padding: 8px 0;
+      border-bottom: 1px solid #f1f1f1;
+    }
+    
+    .attribute {
+      font-weight: 600;
+      color: var(--primary);
+    }
+    
+    .example {
+      padding: 15px;
+      margin: 10px 0;
+      background: white;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .example:hover {
+      background: var(--light);
+    }
+    
+    .error-message {
+      background-color: #f8d7da;
+      color: #721c24;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 15px 0;
+      border-left: 4px solid #dc3545;
+    }
+    
+    .error-retry-btn {
+      background-color: #dc3545;
+      color: white;
+      margin-top: 10px;
+    }
+    
+    .error-retry-btn:hover {
+      background-color: #c82333;
+    }
+    
+    .question-counter {
+      font-size: 0.9em;
+      color: #666;
+      margin-top: 5px;
+      font-style: italic;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+      
+      .message {
+        max-width: 90%;
+      }
+      
+      .header {
+        padding: 15px;
+      }
+      
+      .action-cards {
+        grid-template-columns: 1fr;
+      }
+      
+      .input-group {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>SOX ITGC Auditor Workbench</h1>
+      <p>AI-Powered Risk Assessment & Control Evaluation</p>
+    </div>
+    
+    <div id="risk-focus-banner" class="risk-focus-banner">
+      Currently assessing: <strong id="current-risk-focus"></strong>
+    </div>
+    
+    <div class="action-cards" id="action-cards">
+      <div class="card" onclick="startNewAssessment()">
+        <div class="card-icon">📝</div>
+        <h3>New Assessment</h3>
+        <p>Evaluate a new control or risk scenario</p>
+      </div>
+      
+      <div class="card" onclick="showExamples()">
+        <div class="card-icon">🔍</div>
+        <h3>View Examples</h3>
+        <p>Explore common risk scenarios</p>
+      </div>
+      
+      <div class="card" onclick="showCompletenessAssessment()">
+        <div class="card-icon">✅</div>
+        <h3>Completeness Check</h3>
+        <p>Assess data/process completeness risks</p>
+      </div>
+    </div>
+    
+    <div class="chat-container" id="chat-container">
+      <div class="chat-messages" id="chat-messages"></div>
+      <div id="loading-spinner" class="spinner"></div>
+    </div>
+    
+    <div id="user-input-container">
+      <textarea id="initial-input" placeholder="Describe the control or risk scenario..."></textarea>
+      <div class="input-group">
+        <button id="submit-btn" onclick="startAssessment()">Submit</button>
+        <button onclick="backToMain()" class="back-btn">Cancel</button>
+      </div>
+    </div>
+    
+    <div id="risk-result" class="risk-result">
+      <h2>Assessment Result</h2>
+      <div id="risk-output"></div>
+    </div>
+  </div>
+
+  <script>
+    // State
+    let conversationHistory = [];
+    let currentQuestions = [];
+    let currentAssessmentMode = 'standard';
+    let sessionId = generateSessionId();
+    let questionCount = 0;
+    const maxQuestions = 20;
+    
+    // Generate unique session ID
+    function generateSessionId() {
+      return 'session-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    }
+    
+    // DOM Elements
+    const chatMessages = document.getElementById('chat-messages');
+    const initialInput = document.getElementById('initial-input');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const actionCards = document.getElementById('action-cards');
+    const chatContainer = document.getElementById('chat-container');
+    const userInputContainer = document.getElementById('user-input-container');
+    const riskResult = document.getElementById('risk-result');
+    const riskOutput = document.getElementById('risk-output');
+    const riskFocusBanner = document.getElementById('risk-focus-banner');
+    const currentRiskFocus = document.getElementById('current-risk-focus');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    // Example Data
+    const examples = [
+      "Developer deploying untested code to production",
+      "Single user with both initiator and approver roles in financial systems",
+      "Missing audit trail for user access changes",
+      "No segregation of duties between development and production access",
+      "Unauthorized changes to financial reporting systems"
+    ];
+    
+    const completenessExamples = [
+      "Incomplete customer data in CRM system",
+      "Missing fields in financial transaction records",
+      "Partial test coverage for critical processes",
+      "Incomplete documentation for SOX controls",
+      "Missing approval signatures in change management"
+    ];
+    
+    // Navigation Functions
+    function startNewAssessment() {
+      currentAssessmentMode = 'standard';
+      riskFocusBanner.style.display = 'none';
+      actionCards.style.display = 'none';
+      userInputContainer.style.display = 'block';
+      initialInput.focus();
+    }
+    
+    function showCompletenessAssessment() {
+      currentAssessmentMode = 'completeness';
+      currentRiskFocus.textContent = 'Data/Process Completeness Risk';
+      riskFocusBanner.style.display = 'block';
+      actionCards.style.display = 'none';
+      userInputContainer.style.display = 'block';
+      initialInput.placeholder = "Describe the data or process that might be incomplete...";
+      initialInput.focus();
+    }
+    
+    function showExamples() {
+      actionCards.innerHTML = `
+        <h2 style="grid-column: 1/-1">Common Risk Scenarios</h2>
+        ${examples.map(ex => `
+          <div class="example" onclick="loadExample('${ex.replace(/'/g, "\\'")}')">${ex}</div>
+        `).join('')}
+        <h2 style="grid-column: 1/-1; margin-top: 20px;">Completeness Examples</h2> 
+        ${completenessExamples.map(ex => `
+          <div class="example" onclick="loadCompletenessExample('${ex.replace(/'/g, "\\'")}')">${ex}</div>
+        `).join('')}
+        <button onclick="backToMain()" class="back-btn" style="grid-column: 1/-1">← Back to Main</button>
+      `;
+    }
+    
+    function loadExample(text) {
+      initialInput.value = text;
+      startNewAssessment();
+    }
+    
+    function loadCompletenessExample(text) {
+      initialInput.value = text;
+      showCompletenessAssessment();
+    }
+    
+    function backToMain() {
+      actionCards.style.display = 'grid';
+      chatContainer.style.display = 'none';
+      userInputContainer.style.display = 'none';
+      riskResult.style.display = 'none';
+      riskFocusBanner.style.display = 'none';
+      conversationHistory = [];
+      chatMessages.innerHTML = '';
+      riskOutput.innerHTML = '';
+      initialInput.value = '';
+      initialInput.placeholder = "Describe the control or risk scenario...";
+      sessionId = generateSessionId();
+      questionCount = 0;
+    }
+    
+    // Chat Functions
+    function addMessage(role, content) {
+      const chatHistory = document.getElementById('chat-messages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${role}-message`;
+      
+      const headerDiv = document.createElement('div');
+      headerDiv.className = `${role}-header`;
+      headerDiv.innerHTML = `<strong>${role === 'auditor' ? 'AI Lead Auditor' : 'You'}:</strong>`;
+      
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'message-content';
+      contentDiv.textContent = content;
+      
+      messageDiv.appendChild(headerDiv);
+      messageDiv.appendChild(contentDiv);
+      chatHistory.appendChild(messageDiv);
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+    
+    function showLoading(show) {
+      loadingSpinner.style.display = show ? 'block' : 'none';
+      submitBtn.disabled = show;
+    }
+    
+    // Assessment Functions
+    async function startAssessment() {
+      const text = initialInput.value.trim();
+      if (!text) {
+        alert('Please enter a description to assess');
+        return;
+      }
+      
+      // Reset session for new assessment
+      sessionId = generateSessionId();
+      questionCount = 0;
+      
+      // Show chat interface
+      chatContainer.style.display = 'block';
+      userInputContainer.style.display = 'none';
+      
+      addMessage('user', text);
+      conversationHistory.push({ role: 'user', content: text });
+      initialInput.value = '';
+      showLoading(true);
+      
+      try {
+        const response = await fetch('/api/assess', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            sessionId,
+            controlDescription: text,
+            conversation: conversationHistory,
+            mode: currentAssessmentMode
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === "NEEDS_CLARIFICATION") {
+          questionCount = data.questionCount || 0;
+          const questionText = "To properly assess this, I need some clarification:\n" + 
+            data.questions.map((q, i) => `${i+1}. ${q}`).join('\n') +
+            `\n\n<div class="question-counter">Questions ${questionCount}/${maxQuestions}</div>`;
+          
+          addMessage('auditor', questionText);
+          conversationHistory.push({ role: 'assistant', content: questionText });
+          
+          if (data.risk_focus === "completeness") {
+            showCompletenessQuestions(data.questions);
+          } else {
+            showAuditorQuestions(data.questions);
+          }
+        } else {
+          showRiskAssessment(data);
+        }
+      } catch (error) {
+        console.error('Assessment failed:', error);
+        showRiskAssessment({
+          error: true,
+          details: "Failed to complete assessment",
+          retry_suggestion: "Please check your connection and try again."
+        });
+      } finally {
+        showLoading(false);
+      }
+    }
+    
+    function showAuditorQuestions(questions) {
+      userInputContainer.innerHTML = `
+        <div class="question-group">
+          <h3>AI Lead Auditor Questions</h3>
+          ${questions.map((question, index) => `
+            <div class="auditor-question">
+              <label>${index + 1}. ${question}</label>
+              <textarea id="response-${index}" placeholder="Your response..."></textarea>
+            </div>
+          `).join('')}
+          <div class="question-counter">Questions ${questionCount}/${maxQuestions}</div>
+          <div class="input-group">
+            <button onclick="submitAuditorResponses()">Submit Responses</button>
+            <button onclick="backToMain()" class="back-btn">Cancel</button>
+          </div>
+        </div>
+      `;
+      
+      userInputContainer.style.display = 'block';
+      currentQuestions = questions;
+    }
+    
+    function showCompletenessQuestions(questions) {
+      userInputContainer.innerHTML = `
+        <div class="question-group">
+          <h3>Completeness Details Required</h3>
+          <p>Please provide specific information about:</p>
+          ${questions.map((question, index) => `
+            <div class="auditor-question">
+              <label class="required-field">${index + 1}. ${question}</label>
+              <textarea id="response-${index}" 
+                        placeholder="Be specific about ${question.toLowerCase()}..."></textarea>
+            </div>
+          `).join('')}
+          <div class="question-counter">Questions ${questionCount}/${maxQuestions}</div>
+          <div class="input-group">
+            <button onclick="submitAuditorResponses()">Submit Details</button>
+            <button onclick="backToMain()" class="back-btn">Cancel</button> 
+          </div>
+        </div>
+      `;
+      
+      userInputContainer.style.display = 'block';
+      currentQuestions = questions;
+    }
+    
+    async function submitAuditorResponses() {
+      const responses = currentQuestions.map((_, index) => {
+        const response = document.getElementById(`response-${index}`).value.trim();
+        return {
+          question: currentQuestions[index],
+          response
+        };
+      });
+      
+      // Validate required fields for completeness assessment
+      if (currentAssessmentMode === 'completeness') {
+        const emptyResponses = responses.filter(r => !r.response);
+        if (emptyResponses.length > 0) {
+          alert('Please complete all required fields marked with *');
+          return;
+        }
+      }
+      
+      const responseText = responses
+        .filter(r => r.response)
+        .map(r => `Q: ${r.question}\nA: ${r.response}`)
+        .join('\n\n');
+      
+      if (!responseText) {
+        alert('Please provide at least one response');
+        return;
+      }
+      
+      addMessage('user', 'Additional Information:\n' + responseText);
+      conversationHistory.push({ 
+        role: 'user', 
+        content: responseText 
+      });
+      
+      userInputContainer.style.display = 'none';
+      showLoading(true);
+      
+      try {
+        const response = await fetch('/api/assess', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            sessionId,
+            controlDescription: '',
+            conversation: conversationHistory,
+            mode: currentAssessmentMode
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === "NEEDS_CLARIFICATION") {
+          questionCount = data.questionCount || questionCount;
+          const questionText = "To continue the assessment, I need further clarification:\n" + 
+            data.questions.map((q, i) => `${i+1}. ${q}`).join('\n') +
+            `\n\n<div class="question-counter">Questions ${questionCount}/${maxQuestions}</div>`;
+          
+          addMessage('auditor', questionText);
+          conversationHistory.push({ role: 'assistant', content: questionText });
+          
+          if (data.risk_focus === "completeness") {
+            showCompletenessQuestions(data.questions);
+          } else {
+            showAuditorQuestions(data.questions);
+          }
+        } else {
+          showRiskAssessment(data);
+        }
+      } catch (error) {
+        console.error('Final assessment failed:', error);
+        showRiskAssessment({
+          error: true,
+          details: "Failed to complete final assessment",
+          retry_suggestion: "Please check your input and try again."
+        });
+      } finally {
+        showLoading(false);
+      }
+    }
+    
+    function showRiskAssessment(result) {
+      if (result.error) {
+        riskOutput.innerHTML = `
+          <div class="error-message">
+            <h3>Assessment Failed</h3>
+            <p>${result.details || 'An unexpected error occurred'}</p>
+            ${result.retry_suggestion ? `<p>${result.retry_suggestion}</p>` : ''}
+            <button onclick="retryAssessment()" class="error-retry-btn">Retry Assessment</button>
+          </div>
+        `;
+        riskResult.style.display = 'block';
+        showLoading(false);
+        return;
+      }
+
+      // Parse the markdown-like response into HTML
+      let formattedOutput = formatRiskAssessment(result.risk_statement);
+      
+      // Determine risk level
+      const riskLevel = getRiskLevel(result.risk_score);
+      const riskLevelClass = `risk-level-${riskLevel.toLowerCase()}`;
+      
+      riskOutput.innerHTML = `
+        <div class="risk-score">
+          <span class="risk-score-value risk-score-${result.risk_score}">${result.risk_score}</span>
+          <span>Risk Score: ${result.risk_score}/5</span>
+          <span class="risk-level ${riskLevelClass}">${riskLevel} Risk</span>
+        </div>
+        
+        ${formattedOutput}
+        
+        ${result.control_activities && result.control_activities.length > 0 ? `
+        <div class="risk-section">
+          <h3>Recommended Control Activities</h3>
+          <ul class="attribute-list">
+            ${result.control_activities.map(activity => `
+              <li>
+                <span class="attribute">${activity.attribute}:</span>
+                ${activity.description}
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+        ` : ''}
+        
+        ${result.tests_of_control && result.tests_of_control.length > 0 ? `
+        <div class="risk-section">
+          <h3>Recommended Tests of Control</h3>
+          <ul class="attribute-list">
+            ${result.tests_of_control.map(test => `
+              <li>
+                <span class="attribute">${test.attribute}:</span>
+                ${test.procedure}
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+        ` : ''}
+        
+        <button onclick="backToMain()" class="back-btn">Start New Assessment</button>
+      `;
+      
+      riskResult.style.display = 'block';
+    }
+    
+    function formatRiskAssessment(text) {
+      // Convert markdown headers to HTML sections
+      let html = text;
+      
+      // Convert ## headers to sections
+      html = html.replace(/^## (.*$)/gm, (match, p1) => {
+        return `</div><div class="risk-section"><h3>${p1}</h3>`;
+      });
+      
+      // Convert ### headers to h4 with special formatting
+      html = html.replace(/^### (.*$)/gm, '<h4>$1</h4>');
+      
+      // Convert bullet points to lists
+      html = html.replace(/^-\s(.*$)/gm, '<li>$1</li>');
+      html = html.replace(/<li>.*<\/li>/g, (match) => {
+        return `<ul>${match}</ul>`;
+      });
+      
+      // Convert numbered lists
+      html = html.replace(/^\d+\.\s(.*$)/gm, '<li>$1</li>');
+      html = html.replace(/<li>.*<\/li>/g, (match) => {
+        return `<ol>${match}</ol>`;
+      });
+      
+      // Clean up any empty sections
+      html = html.replace(/<div class="risk-section"><h3><\/h3><\/div>/g, '');
+      
+      return html.substring(6); // Remove initial empty div
+    }
+    
+    function getRiskLevel(score) {
+      if (score >= 4) return 'High';
+      if (score >= 3) return 'Medium';
+      return 'Low';
+    }
+    
+    async function retryAssessment() {
+      showLoading(true);
+      try {
+        // Get the last user message
+        const lastUserMessage = conversationHistory
+          .filter(msg => msg.role === 'user')
+          .pop()?.content || '';
+        
+        const response = await fetch('/api/assess', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            sessionId,
+            controlDescription: lastUserMessage,
+            conversation: conversationHistory,
+            mode: currentAssessmentMode
+          })
+        });
+        
+        const data = await response.json();
+        showRiskAssessment(data);
+      } catch (error) {
+        showRiskAssessment({
+          error: true,
+          details: "Failed to retry assessment",
+          retry_suggestion: "Please check your connection and try again."
+        });
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    // Event Listeners
+    initialInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        startAssessment();
+      }
+    });
+  </script>
+</body>
+</html>

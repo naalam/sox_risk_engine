@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SOX Risk Scorer</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+    textarea { width: 100%; padding: 10px; margin-bottom: 10px; }
+    button { background: #ff4d4d; color: white; border: none; padding: 10px 20px; cursor: pointer; }
+    #result { margin-top: 20px; padding: 15px; border-radius: 5px; }
+    .high-risk { background: #ffebee; border-left: 4px solid #f44336; }
+    .low-risk { background: #e8f5e9; border-left: 4px solid #4caf50; }
+  </style>
+</head>
+<body>
+  <h1>AI SOX Risk Scorer</h1>
+  <textarea id="controlDesc" rows="4" placeholder="Describe ITGC control (e.g. 'Developers can deploy untested code')"></textarea>
+  <button onclick="scoreRisk()">Calculate Risk</button>
+  
+  <div id="result" style="display: none;"></div>
+
+  <script>
+    async function scoreRisk() {
+      const desc = document.getElementById('controlDesc').value.trim();
+      if (!desc) {
+        alert("Please enter a control description!");
+        return;
+      }
+
+      const resultDiv = document.getElementById('result');
+      resultDiv.style.display = 'block';
+      resultDiv.innerHTML = '<p>🔍 Analyzing risk patterns...</p>';
+
+      try {
+        const response = await fetch('http://localhost:3000/api/score', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ controlDescription: desc })
+        });
+
+        if (!response.ok) throw new Error(await response.text());
+        
+        const data = await response.json();
+        
+        resultDiv.className = data.risk_score >= 4 ? 'high-risk' : 'low-risk';
+        resultDiv.innerHTML = `
+          <h3>RISK SCORE: ${data.risk_score}/5</h3>
+          ${data.matched_failure 
+            ? `🚨 <strong>Matched Failure Pattern:</strong> ${data.similar_issues[0].description}<br>
+               ⚠️ <strong>Severity:</strong> ${data.similar_issues[0].severity}/5<br>
+               🖥️ <strong>Affected System:</strong> ${data.similar_issues[0].app}`
+            : '✅ No high-risk patterns detected'}
+        `;
+      } catch (error) {
+        resultDiv.className = 'high-risk';
+        resultDiv.innerHTML = `💥 Error: ${error.message}`;
+        console.error("API Error:", error);
+      }
+    }
+  </script>
+</body>
+</html>
